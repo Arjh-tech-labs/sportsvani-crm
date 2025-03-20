@@ -40,15 +40,33 @@ Route::prefix('superadmin')->middleware(['auth', 'superadmin'])->group(function 
     Route::get('/users', [SuperAdminController::class, 'users'])->name('superadmin.users');
     Route::get('/users/create', [SuperAdminController::class, 'createUser'])->name('superadmin.users.create');
     Route::post('/users', [SuperAdminController::class, 'storeUser'])->name('superadmin.users.store');
+    Route::get('/users/{id}/edit', [SuperAdminController::class, 'editUser'])->name('superadmin.users.edit');
+    Route::put('/users/{id}', [SuperAdminController::class, 'updateUser'])->name('superadmin.users.update');
+    Route::delete('/users/{id}', [SuperAdminController::class, 'destroyUser'])->name('superadmin.users.destroy');
     
     // Team management
     Route::get('/teams', [SuperAdminController::class, 'teams'])->name('superadmin.teams');
+    Route::get('/teams/create', [SuperAdminController::class, 'createTeam'])->name('superadmin.teams.create');
+    Route::post('/teams', [SuperAdminController::class, 'storeTeam'])->name('superadmin.teams.store');
+    Route::get('/teams/{id}/edit', [SuperAdminController::class, 'editTeam'])->name('superadmin.teams.edit');
+    Route::put('/teams/{id}', [SuperAdminController::class, 'updateTeam'])->name('superadmin.teams.update');
+    Route::delete('/teams/{id}', [SuperAdminController::class, 'destroyTeam'])->name('superadmin.teams.destroy');
     
     // Tournament management
     Route::get('/tournaments', [SuperAdminController::class, 'tournaments'])->name('superadmin.tournaments');
+    Route::get('/tournaments/create', [SuperAdminController::class, 'createTournament'])->name('superadmin.tournaments.create');
+    Route::post('/tournaments', [SuperAdminController::class, 'storeTournament'])->name('superadmin.tournaments.store');
+    Route::get('/tournaments/{id}/edit', [SuperAdminController::class, 'editTournament'])->name('superadmin.tournaments.edit');
+    Route::put('/tournaments/{id}', [SuperAdminController::class, 'updateTournament'])->name('superadmin.tournaments.update');
+    Route::delete('/tournaments/{id}', [SuperAdminController::class, 'destroyTournament'])->name('superadmin.tournaments.destroy');
     
     // Match management
     Route::get('/matches', [SuperAdminController::class, 'matches'])->name('superadmin.matches');
+    Route::get('/matches/create', [SuperAdminController::class, 'createMatch'])->name('superadmin.matches.create');
+    Route::post('/matches', [SuperAdminController::class, 'storeMatch'])->name('superadmin.matches.store');
+    Route::get('/matches/{id}/edit', [SuperAdminController::class, 'editMatch'])->name('superadmin.matches.edit');
+    Route::put('/matches/{id}', [SuperAdminController::class, 'updateMatch'])->name('superadmin.matches.update');
+    Route::delete('/matches/{id}', [SuperAdminController::class, 'destroyMatch'])->name('superadmin.matches.destroy');
     
     // System settings
     Route::get('/system', [SuperAdminController::class, 'system'])->name('superadmin.system');
@@ -62,34 +80,5 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [UserController::class, 'dashboard'])->name('dashboard');
     Route::get('/profile', [UserController::class, 'profile'])->name('profile');
     Route::put('/profile', [UserController::class, 'updateProfile'])->name('profile.update');
-    
-    // Player profile
-    Route::get('/player-profile', [UserController::class, 'playerProfile'])->name('player.profile');
-    Route::put('/player-profile', [UserController::class, 'updatePlayerProfile'])->name('player.profile.update');
-    
-    // Team management
-    Route::get('/teams', [TeamController::class, 'index'])->name('teams');
-    Route::get('/teams/create', [TeamController::class, 'create'])->name('teams.create');
-    Route::post('/teams', [TeamController::class, 'store'])->name('teams.store');
-    Route::get('/teams/{id}', [TeamController::class, 'show'])->name('teams.show');
-    Route::get('/teams/{id}/edit', [TeamController::class, 'edit'])->name('teams.edit');
-    Route::put('/teams/{id}', [TeamController::class, 'update'])->name('teams.update');
-    
-    // Tournament management
-    Route::get('/tournaments', [TournamentController::class, 'index'])->name('tournaments');
-    Route::get('/tournaments/create', [TournamentController::class, 'create'])->name('tournaments.create');
-    Route::post('/tournaments', [TournamentController::class, 'store'])->name('tournaments.store');
-    Route::get('/tournaments/{id}', [TournamentController::class, 'show'])->name('tournaments.show');
-    Route::get('/tournaments/{id}/edit', [TournamentController::class, 'edit'])->name('tournaments.edit');
-    Route::put('/tournaments/{id}', [TournamentController::class, 'update'])->name('tournaments.update');
-    
-    // Match management
-    Route::get('/matches', [MatchController::class, 'index'])->name('matches');
-    Route::get('/matches/create', [MatchController::class, 'create'])->name('matches.create');
-    Route::post('/matches', [MatchController::class, 'store'])->name('matches.store');
-    Route::get('/matches/{id}', [MatchController::class, 'show'])->name('matches.show');
-    Route::get('/matches/{id}/edit', [MatchController::class, 'edit'])->name('matches.edit');
-    Route::put('/matches/{id}', [MatchController::class, 'update'])->name('matches.update');
-    Route::get('/matches/{id}/scoring', [MatchController::class, 'scoring'])->name('matches.scoring');
 });
 

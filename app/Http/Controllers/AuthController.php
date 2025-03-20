@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Models\Role;
 
 class AuthController extends Controller
 {
@@ -32,6 +33,41 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
+        // Check if using environment credentials
+        if ($request->email === env('SUPER_ADMIN_EMAIL') && $request->password === env('SUPER_ADMIN_PASSWORD')) {
+            // Find or create super admin user
+            $user = User::where('email', env('SUPER_ADMIN_EMAIL'))->first();
+            
+            if (!$user) {
+                // Create super admin user
+                $user = new User();
+                $user->name = 'Super Admin';
+                $user->email = env('SUPER_ADMIN_EMAIL');
+                $user->mobile = '9876543210';
+                $user->city = 'Mumbai';
+                $user->password = Hash::make(env('SUPER_ADMIN_PASSWORD'));
+                $user->user_id = User::generateUniqueUserId();
+                $user->save();
+                
+                // Get or create super admin role
+                $role = Role::where('name', 'superadmin')->first();
+                if (!$role) {
+                    $role = Role::create([
+                        'name' => 'superadmin',
+                        'description' => 'Super Administrator with full access',
+                    ]);
+                }
+                
+                // Assign role
+                $user->roles()->attach($role->id);
+            }
+            
+            // Login
+            Auth::login($user);
+            return redirect()->intended('superadmin/dashboard');
+        }
+        
+        // Try regular authentication
         $credentials = $request->only('email', 'password');
         
         if (Auth::attempt($credentials)) {
@@ -71,7 +107,8 @@ class AuthController extends Controller
      */
     public function showRegistrationForm()
     {
-        return view('auth.register');
+        $roles = Role::where('name', '!=', 'superadmin')->get();
+        return view('auth.register', compact('roles'));
     }
 
     /**
@@ -149,6 +186,7 @@ class AuthController extends Controller
         $request->validate([
             'verification_id' => 'required|string',
             'otp' => 'required|string|max:6',
+            'mobile' => 'required|string|max:15',
         ]);
 
         // In a real app, this would verify the OTP with Firebase

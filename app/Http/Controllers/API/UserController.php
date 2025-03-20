@@ -41,10 +41,16 @@ class UserController extends Controller
 
         $user = new User();
         $user->name = $request->name;
+        $user->email = $request->email;
         $user->mobile = $request->mobile;
         $user->city = $request->city;
         $user->location = $request->location;
         $user->user_id = User::generateUniqueUserId();
+        
+        if ($request->filled('password')) {
+            $user->password = bcrypt($request->password);
+        }
+        
         $user->save();
 
         // Attach roles
@@ -65,7 +71,7 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        $user = User::with(['roles', 'playerProfile', 'umpireProfile', 'scorerProfile', 'teams'])->findOrFail($id);
+        $user = User::with(['roles', 'playerProfile', 'playerStats', 'teams'])->findOrFail($id);
         
         return response()->json([
             'success' => true,
@@ -90,8 +96,15 @@ class UserController extends Controller
 
         $user = User::findOrFail($id);
         $user->name = $request->name;
+        $user->email = $request->email;
+        $user->mobile = $request->mobile;
         $user->city = $request->city;
         $user->location = $request->location;
+        
+        if ($request->filled('password')) {
+            $user->password = bcrypt($request->password);
+        }
+        
         $user->save();
 
         // Sync roles
