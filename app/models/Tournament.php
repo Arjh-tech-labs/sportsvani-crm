@@ -15,27 +15,27 @@ class Tournament extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'tournament_id', // Unique tournament ID
+        'tournament_id',
         'name',
         'logo',
         'banner',
-        'organizer_id', // User ID of organizer
+        'organizer_id',
         'organizer_name',
         'organizer_mobile',
         'organizer_email',
         'start_date',
         'end_date',
-        'category', // Open, Corporate, Community, School, College, University Series, Other
-        'ball_type', // Leather, Tennis, Other
-        'pitch_type', // Rough, Cement, Turf, Matt, Other
-        'match_type', // Limited Overs, Box/Turf, Test Match
+        'category',
+        'ball_type',
+        'pitch_type',
+        'match_type',
         'team_count',
         'fees',
-        'winning_prize', // Cash, Trophy, Both
-        'match_days', // JSON array of days
-        'match_timings', // Day, Night, Day & Night
-        'format', // League, Knockout
-        'status', // Upcoming, Active, Completed, Cancelled
+        'winning_prize',
+        'match_days',
+        'match_timings',
+        'format',
+        'status',
     ];
 
     /**
@@ -44,8 +44,8 @@ class Tournament extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'start_date' => 'datetime',
-        'end_date' => 'datetime',
+        'start_date' => 'date',
+        'end_date' => 'date',
         'match_days' => 'array',
     ];
 
@@ -80,7 +80,9 @@ class Tournament extends Model
      */
     public function teams()
     {
-        return $this->belongsToMany(Team::class, 'tournament_teams');
+        return $this->belongsToMany(Team::class, 'tournament_teams')
+            ->withPivot('group_id', 'status', 'registered_at')
+            ->withTimestamps();
     }
 
     /**
@@ -100,45 +102,11 @@ class Tournament extends Model
     }
 
     /**
-     * Get the officials in the tournament.
-     */
-    public function officials()
-    {
-        return $this->belongsToMany(User::class, 'tournament_officials')
-            ->withPivot('role')
-            ->withTimestamps();
-    }
-
-    /**
      * Get the matches in the tournament.
      */
     public function matches()
     {
         return $this->hasMany(Match::class);
-    }
-
-    /**
-     * Get the points table for the tournament.
-     */
-    public function pointsTable()
-    {
-        return $this->hasOne(TournamentPointsTable::class);
-    }
-
-    /**
-     * Get the leaderboard for the tournament.
-     */
-    public function leaderboard()
-    {
-        return $this->hasOne(TournamentLeaderboard::class);
-    }
-
-    /**
-     * Get the gallery images for the tournament.
-     */
-    public function gallery()
-    {
-        return $this->hasMany(Gallery::class, 'tournament_id')->where('type', 'tournament');
     }
 }
 

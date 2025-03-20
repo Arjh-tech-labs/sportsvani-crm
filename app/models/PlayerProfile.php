@@ -16,20 +16,11 @@ class PlayerProfile extends Model
      */
     protected $fillable = [
         'user_id',
-        'player_type', // Batter, Bowler, Allrounder, WicketKeeper
-        'batting_style', // Right, Left
-        'bowling_style', // Various styles
+        'player_type',
+        'batting_style',
+        'bowling_style',
         'highest_score',
         'best_bowling',
-    ];
-
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'stats' => 'array',
     ];
 
     /**
@@ -45,39 +36,14 @@ class PlayerProfile extends Model
      */
     public function stats()
     {
-        return $this->hasOne(PlayerStat::class, 'player_id', 'user_id');
-    }
-
-    /**
-     * Get the teams that the player is a member of.
-     */
-    public function teams()
-    {
-        return $this->belongsToMany(Team::class, 'team_players', 'player_id', 'team_id');
-    }
-
-    /**
-     * Get the matches that the player has participated in.
-     */
-    public function matches()
-    {
-        return $this->belongsToMany(Match::class, 'match_players', 'player_id', 'match_id');
-    }
-
-    /**
-     * Get the awards that the player has won.
-     */
-    public function awards()
-    {
-        return $this->hasMany(Award::class, 'player_id', 'user_id');
-    }
-
-    /**
-     * Get the gallery images for the player.
-     */
-    public function gallery()
-    {
-        return $this->hasMany(Gallery::class, 'user_id', 'user_id')->where('type', 'player');
+        return $this->hasOneThrough(
+            PlayerStat::class,
+            User::class,
+            'id', // Foreign key on users table
+            'player_id', // Foreign key on player_stats table
+            'user_id', // Local key on player_profiles table
+            'id' // Local key on users table
+        );
     }
 }
 

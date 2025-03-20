@@ -15,10 +15,10 @@ class Team extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'team_id', // Unique team ID
+        'team_id',
         'name',
         'logo',
-        'captain_id', // User ID of captain
+        'captain_id',
         'captain_name',
         'captain_mobile',
     ];
@@ -54,15 +54,15 @@ class Team extends Model
      */
     public function players()
     {
-        return $this->belongsToMany(User::class, 'team_players', 'team_id', 'player_id');
+        return $this->belongsToMany(User::class, 'team_players', 'team_id', 'player_id')
+            ->withPivot('role')
+            ->withTimestamps();
     }
 
     /**
-     * Get the managers of the team.
-     */
-    public function managers()
-    {
-        return $this->belongsToMany(User::class, 'team_managers', 'team_id', 'manager_id');
+       'player_id')
+            ->withPivot('role')
+            ->withTimestamps();
     }
 
     /**
@@ -78,31 +78,34 @@ class Team extends Model
      */
     public function tournaments()
     {
-        return $this->belongsToMany(Tournament::class, 'tournament_teams');
+        return $this->belongsToMany(Tournament::class, 'tournament_teams')
+            ->withPivot('group_id', 'status', 'registered_at')
+            ->withTimestamps();
     }
 
     /**
-     * Get the matches that the team has played.
+     * Get the matches that the team has played as team A.
+     */
+    public function homeMatches()
+    {
+        return $this->hasMany(Match::class, 'team_a_id');
+    }
+
+    /**
+     * Get the matches that the team has played as team B.
+     */
+    public function awayMatches()
+    {
+        return $this->hasMany(Match::class, 'team_b_id');
+    }
+
+    /**
+     * Get all matches for the team.
      */
     public function matches()
     {
-        return $this->belongsToMany(Match::class, 'match_teams');
-    }
-
-    /**
-     * Get the awards that the team has won.
-     */
-    public function awards()
-    {
-        return $this->hasMany(Award::class, 'team_id');
-    }
-
-    /**
-     * Get the gallery images for the team.
-     */
-    public function gallery()
-    {
-        return $this->hasMany(Gallery::class, 'team_id')->where('type', 'team');
+        return Match::where('team_a_id', $this->id)
+            ->orWhere('team_b_id', $this->id);
     }
 }
 

@@ -15,11 +15,11 @@ class Match extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'match_id', // Unique match ID
+        'match_id',
         'name',
-        'match_type', // Limited Overs, Test
-        'ball_type', // Leather, Tennis, Other
-        'pitch_type', // Rough, Matt, Cement, Turf, Other
+        'match_type',
+        'ball_type',
+        'pitch_type',
         'overs',
         'powerplay_overs',
         'overs_per_bowler',
@@ -29,10 +29,10 @@ class Match extends Model
         'team_a_id',
         'team_b_id',
         'toss_winner_id',
-        'toss_decision', // Bat, Bowl
+        'toss_decision',
         'tournament_id',
         'round_id',
-        'status', // Scheduled, Live, Completed, Abandoned, Cancelled
+        'status',
     ];
 
     /**
@@ -42,7 +42,6 @@ class Match extends Model
      */
     protected $casts = [
         'date' => 'datetime',
-        'officials' => 'array',
     ];
 
     /**
@@ -118,7 +117,7 @@ class Match extends Model
      */
     public function players()
     {
-        return $this->belongsToMany(User::class, 'match_players')
+        return $this->belongsToMany(User::class, 'match_players', 'match_id', 'player_id')
             ->withPivot('team_id', 'role')
             ->withTimestamps();
     }
@@ -132,51 +131,11 @@ class Match extends Model
     }
 
     /**
-     * Get the batting scorecard for the match.
+     * Get the innings for the match.
      */
-    public function battingScorecard()
+    public function innings()
     {
-        return $this->hasMany(BattingScorecard::class);
-    }
-
-    /**
-     * Get the bowling scorecard for the match.
-     */
-    public function bowlingScorecard()
-    {
-        return $this->hasMany(BowlingScorecard::class);
-    }
-
-    /**
-     * Get the events for the match.
-     */
-    public function events()
-    {
-        return $this->hasMany(MatchEvent::class);
-    }
-
-    /**
-     * Get the wagon wheel data for the match.
-     */
-    public function wagonWheel()
-    {
-        return $this->hasMany(WagonWheel::class);
-    }
-
-    /**
-     * Get the live stream for the match.
-     */
-    public function liveStream()
-    {
-        return $this->hasOne(LiveStream::class);
-    }
-
-    /**
-     * Get the gallery images for the match.
-     */
-    public function gallery()
-    {
-        return $this->hasMany(Gallery::class, 'match_id')->where('type', 'match');
+        return $this->hasMany(Innings::class);
     }
 }
 

@@ -17,13 +17,13 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
+        'user_id',
         'name',
         'email',
-        'password',
         'mobile',
+        'password',
         'city',
         'location',
-        'user_id', // Unique user ID
     ];
 
     /**
@@ -89,19 +89,11 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the umpire profile for the user.
+     * Get the player stats for the user.
      */
-    public function umpireProfile()
+    public function playerStats()
     {
-        return $this->hasOne(UmpireProfile::class);
-    }
-
-    /**
-     * Get the scorer profile for the user.
-     */
-    public function scorerProfile()
-    {
-        return $this->hasOne(ScorerProfile::class);
+        return $this->hasOne(PlayerStat::class, 'player_id');
     }
 
     /**
@@ -109,7 +101,7 @@ class User extends Authenticatable
      */
     public function teams()
     {
-        return $this->belongsToMany(Team::class, 'team_players');
+        return $this->belongsToMany(Team::class, 'team_players', 'player_id');
     }
 
     /**
@@ -126,6 +118,24 @@ class User extends Authenticatable
     public function organizedTournaments()
     {
         return $this->hasMany(Tournament::class, 'organizer_id');
+    }
+
+    /**
+     * Get the matches that the user has participated in.
+     */
+    public function matches()
+    {
+        return $this->belongsToMany(Match::class, 'match_players', 'player_id');
+    }
+
+    /**
+     * Get the matches that the user has officiated.
+     */
+    public function officiatedMatches()
+    {
+        return $this->belongsToMany(Match::class, 'match_officials')
+            ->withPivot('role')
+            ->withTimestamps();
     }
 }
 
